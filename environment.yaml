@@ -1,0 +1,22 @@
+name: EnCore
+channels:
+  - pytorch
+  - defaults
+  - anaconda
+  - conda-forge
+dependencies:
+  - python>=3.7
+  - cython
+  - pytorch==1.13.1
+  - pip
+  - pip:
+      - gensim>=3.7.2
+      - insanity>=2017.1
+      - numpy>=1.16
+      - scikit-learn>=0.21.1
+      - staticinit>=2017.1
+      - spacy==3.3
+      - torchtestcase>=2018.1
+      - transformers==4.20.1
+      - git+https://github.com/phohenecker/arg-magic
+      - git+https://git.paho.at/phohenecker/exp-base
