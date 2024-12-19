@@ -19,35 +19,58 @@ We use the pre-trained encoder representations to classify entity types:
 
 ---
 
-## **Getting Started**
+## Getting Started
 
-### **1. Using the Pre-trained Encoders**
+### 1. Using the Pre-Trained Encoders
 
-The pre-trained encoders are available on **HuggingFace**. Follow these steps to download and load them:
+This section demonstrates how to use the pre-trained entity encoders.
+
+#### Import the Necessary Libraries and Classes
 
 ```python
-from transformers import AutoTokenizer, AutoModel
+# Import local classes for pre-trained encoders from src/main/python/encore/pre_trained_enc
+import encore.pre_trained_enc.pre_trained_albert_enc as albert_enc
+import encore.pre_trained_enc.pre_trained_bert_enc as bert_enc
+import encore.pre_trained_enc.pre_trained_roberta_enc as roberta_enc
 
-# Choose an EnCore encoder: 'bert-encore', 'albert-encore', or 'roberta-encore'
-encoder_name = "fmmka/bert-encore"
-# For Albert use 'fmmka/albert-encore', for RoBerta use 'fmmka/roberta-encore'
+# Import tokenizers from the transformers library
+from transformers import AutoTokenizer
 
-# Load tokenizer and model
-tokenizer = AutoTokenizer.from_pretrained(encoder_name)
-model = AutoModel.from_pretrained(encoder_name)
+```
+#### Load Pre-Trained Models and Tokenizers
 
-# Example: Encode a sentence with an entity span
-sentence = "The patient in front of her was waiting."
-entity_position = [1]  # Index of "patient" in the tokenized sentence
-inputs = tokenizer(sentence, return_tensors="pt")
+Below are examples of how to load pre-trained encoders for BERT, ALBERT, and RoBERTa.
+```python
+# Load the pre-trained EnCore model based on BERT and its tokenizer
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+model = bert_enc.EntityEncoder.from_pretrained("fmmka/bert-encore")
 
-# Compute embeddings
-outputs = model(**inputs)
-entity_embedding = outputs.last_hidden_state[:, entity_position, :].squeeze(1)
-print("Entity representation:", entity_embedding)
+# Load the pre-trained EnCore model based on ALBERT and its tokenizer
+tokenizer = AutoTokenizer.from_pretrained("albert-xxlarge-v1")
+model = albert_enc.EntityEncoder.from_pretrained("fmmka/albert-encore")
+
+# Load the pre-trained EnCore model based on RoBERTa and its tokenizer
+tokenizer = AutoTokenizer.from_pretrained("roberta-large")
+model = roberta_enc.EntityEncoder.from_pretrained("fmmka/roberta-encore")
 ```
 
----
+#### Encoding Text with Entity Spans
+```python
+# Example: Encode a sentence with an entity span
+sentence = "The patient in front of her was waiting."
+entity_position = [1]  # Index of the target word "patient" in the tokenized sentence
+
+# Tokenize the input
+inputs = tokenizer(sentence, return_tensors="pt")
+
+# Compute embeddings using the pre-trained encoder
+outputs, _ = model(input_ids=inputs["input_ids"])
+
+# Extract the entity embedding for the specified entity position
+entity_embedding = outputs[:, entity_position, :].squeeze(1)
+```
+
+Once the tokenizer and model are loaded, you can encode a sentence and extract entity embeddings for a specified entity span:
 
 ### **2. Training an Entity Type Classifier**
 
